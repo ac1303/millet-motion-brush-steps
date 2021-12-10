@@ -165,4 +165,6 @@ class MiFit:
         raise Exception("获取 APP Token 失败")
         
 ms=MiFit()
-ms.login('18336684721',"fanshuhua111",)
+ms.login('1833****',"fan*****",)
+# 第一个填账号，第二个填密码，第三个步数，如果为空则随机
+# 大部分代码来自https://gitee.com/mtrdong/mifit?_from=gitee_search
