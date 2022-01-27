@@ -1,4 +1,4 @@
- **重要说明**
+ **閲嶈璇存槑**
  ----
-  * 代码来自 https://gitee.com/mtrdong/mifit?_from=gitee_search
-  * 我从中截取了模拟登录提交步数的那部分，用于放到服务器上面定时执行
+  * 浠ｇ爜鏉ヨ嚜 https://gitee.com/mtrdong/mifit?_from=gitee_search
+  * 鎴戜粠涓埅鍙栦簡妯℃嫙鐧诲綍鎻愪氦姝ユ暟鐨勯偅閮ㄥ垎锛岀敤浜庢斁鍒版湇鍔″櫒涓婇潰瀹氭椂鎵ц

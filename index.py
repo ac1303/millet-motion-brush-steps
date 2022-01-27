@@ -1,4 +1,4 @@
-# -*- coding: gbk -*-
+# -*- coding: UTF-8 -*-
 import json
 import random
 import re
@@ -17,13 +17,28 @@ class MiFit:
             "User-Agent": f"MiFit/{self.app_version} ({self.device_name}; {self.device_system}; Scale/2.00)",
             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
         }
+        self.pushDeerKey='PDU4477T9s84NUvrYQASjr87acp6R6Aaak9p****'
+
+
+    def pushDeer(self,text):
+        if(len(self.pushDeerKey)==40):
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"å¼€å§‹æ¨é€æ•°æ®åˆ°æ‰‹æœº")
+            url="https://api2.pushdeer.com/message/push?pushkey="+self.pushDeerKey+"&text="+text
+            req = json.loads(requests.get(url=url).text)
+            if(req['content']['result']==False):
+                print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"å¯†é’¥ä¸æ­£ç¡®")
+            else:
+                for list in req['content']['result']:
+                    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"è®¾å¤‡ï¼š"+list['trace_id'],"æ¨é€"+list['description'])
+        else:
+            print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),"PushDeerçš„æ¨é€å¯†é’¥ä¸æ­£ç¡®ï¼Œè¯·é‡æ–°å¡«å†™")
 
     def login(self, account, password, step=None):
-        """µÇÂ¼"""
+        """ç™»å½•"""
         if step is None:
             step = random.randint(22222, 55555)
         url = "https://account.huami.com/v2/client/login"
-        print("Ëæ»ú²½Êı£º",step)
+        # print("éšæœºæ­¥æ•°ï¼š",step)
         data = {
             "app_version": self.app_version,
             "code": self._get_access_code(account, password),
@@ -38,17 +53,17 @@ class MiFit:
         if response.status_code == 200:
             content = json.loads(response.content)
             login_token = content["token_info"]["login_token"]
-            print("login_token: ",login_token)
+            # print("login_token: ",login_token)
             user_id = content["token_info"]["user_id"]
-            print("user_id: ",user_id)
+            # print("user_id: ",user_id)
             return self._sync_data(login_token, user_id, step)
         else:
-            raise Exception("µÇÂ¼Ê§°Ü")
+            raise Exception("ç™»å½•å¤±è´¥")
 
     def _sync_data(self, login_token, user_id, step):
-        """Í¬²½Êı¾İ"""
+        """åŒæ­¥æ•°æ®"""
         ctime = int(time.time()) - random.randint(-3600, 3600)
-        print("ctime: ",ctime)
+        # print("ctime: ",ctime)
         url = f"https://api-mifit-cn.huami.com/v1/data/band_data.json?&t={ctime}"
         headers = {
             "User-Agent": f"Mozilla/5.0 (Linux; {self.device_system}; {self.device_name} Build/RKQ1.201112.002; wv) "
@@ -130,13 +145,16 @@ class MiFit:
             "last_deviceid": str(uuid.uuid4()).upper()
         }
         response = requests.post(url=url, headers=headers, data=data, timeout=5)
-        print(response.text)
+        # print(response.text)
         if response.status_code == 200:
-            return "Êı¾İÍ¬²½³É¹¦"
-        raise Exception("Êı¾İÍ¬²½Ê§°Ü")
+            self.pushDeer("éšæœºæ­¥æ•°ä¸ºï¼š"+str(step)+"  æ­¥æ•°æäº¤æˆåŠŸï¼")
+            return "æ•°æ®åŒæ­¥æˆåŠŸ"
+        else:
+            self.pushDeer("éšæœºæ­¥æ•°ä¸ºï¼š"+str(step)+"  æ­¥æ•°æäº¤å¤±è´¥ï¼é”™è¯¯ä¿¡æ¯è¯·æŸ¥çœ‹æ—¥å¿—ï¼")
+        raise Exception("æ•°æ®åŒæ­¥å¤±è´¥")
 
     def _get_access_code(self, account, password):
-        """»ñÈ¡ Access Code"""
+        """è·å– Access Code"""
         url = f"https://api-user.huami.com/registrations/+86{account}/tokens"
         data = {
             "client_id": "HuaMi",
@@ -150,10 +168,10 @@ class MiFit:
                 return re.findall(r"&access=(.*?)&", response.url)[0]
             except IndexError:
                 print(response.url)
-        raise Exception("»ñÈ¡ Access Code Ê§°Ü")
+        raise Exception("è·å– Access Code å¤±è´¥")
 
     def _get_app_token(self, login_token):
-        """»ñÈ¡ APP Token"""
+        """è·å– APP Token"""
         url = "https://account-cn.huami.com/v1/client/app_tokens?" \
               "app_name={}&" \
               "dn=api-user.huami.com,api-mifit.huami.com,app-analytics.huami.com&" \
@@ -162,9 +180,9 @@ class MiFit:
         if response.status_code == 200:
             content = json.loads(response.content)
             return content["token_info"]["app_token"]
-        raise Exception("»ñÈ¡ APP Token Ê§°Ü")
+        raise Exception("è·å– APP Token å¤±è´¥")
         
 ms=MiFit()
 ms.login('1833****',"fan*****",)
-# µÚÒ»¸öÌîÕËºÅ£¬µÚ¶ş¸öÌîÃÜÂë£¬µÚÈı¸ö²½Êı£¬Èç¹ûÎª¿ÕÔòËæ»ú
-# ´ó²¿·Ö´úÂëÀ´×Ôhttps://gitee.com/mtrdong/mifit?_from=gitee_search
+# ç¬¬ä¸€ä¸ªå¡«è´¦å·ï¼Œç¬¬äºŒä¸ªå¡«å¯†ç ï¼Œç¬¬ä¸‰ä¸ªæ­¥æ•°ï¼Œå¦‚æœä¸ºç©ºåˆ™éšæœº
+# å¤§éƒ¨åˆ†ä»£ç æ¥è‡ªhttps://gitee.com/mtrdong/mifit?_from=gitee_search
